@@ -4,45 +4,171 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Mini Todo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    main {
+      width: 100%;
+      max-width: 520px;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .todo-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 5px;
+      background: #2563eb;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    ul {
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    li span {
+      flex: 1;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+    }
+
+    li.completed span {
+      color: #777;
+      text-decoration: line-through;
+    }
+
+    .delete-button {
+      padding: 7px 10px;
+      background: #dc2626;
+    }
+
+    .delete-button:hover {
+      background: #b91c1c;
+    }
+  </style>
 </head>
 <body>
-  <h1>My Mini Todo</h1>
-  <input type="text" placeholder="Add a todo" aria-label="New todo">
-  <button type="button">Add</button>
-  <ul></ul>
+  <main>
+    <h1>My Mini Todo</h1>
+    <div class="todo-form">
+      <input type="text" placeholder="Add a todo" aria-label="New todo">
+      <button id="add-button" type="button">Add</button>
+    </div>
+    <ul></ul>
+  </main>
   <script>
     const input = document.querySelector('input');
-    const addButton = document.querySelector('button');
+    const addButton = document.querySelector('#add-button');
     const list = document.querySelector('ul');
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
-    addButton.addEventListener('click', () => {
-      const todo = input.value.trim();
+    function saveTodos() {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
 
-      if (todo) {
+    function renderTodos() {
+      list.innerHTML = '';
+
+      todos.forEach((todo, index) => {
         const item = document.createElement('li');
         const todoText = document.createElement('span');
         const deleteButton = document.createElement('button');
 
-        todoText.textContent = todo;
+        todoText.textContent = todo.text;
+        item.classList.toggle('completed', todo.completed);
+
         todoText.addEventListener('click', () => {
-          if (todoText.style.textDecoration === 'line-through') {
-            todoText.style.textDecoration = 'none';
-          } else {
-            todoText.style.textDecoration = 'line-through';
-          }
+          todo.completed = !todo.completed;
+          saveTodos();
+          renderTodos();
         });
 
         deleteButton.textContent = 'Delete';
+        deleteButton.className = 'delete-button';
         deleteButton.addEventListener('click', () => {
-          item.remove();
+          todos.splice(index, 1);
+          saveTodos();
+          renderTodos();
         });
 
         item.appendChild(todoText);
         item.appendChild(deleteButton);
         list.appendChild(item);
+      });
+    }
+
+    function addTodo() {
+      const text = input.value.trim();
+
+      if (text) {
+        todos.push({ text: text, completed: false });
+        saveTodos();
+        renderTodos();
         input.value = '';
+        input.focus();
+      }
+    }
+
+    addButton.addEventListener('click', addTodo);
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        addTodo();
       }
     });
+
+    renderTodos();
   </script>
 </body>
 </html>
