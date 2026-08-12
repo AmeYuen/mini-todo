@@ -1,1 +1,30 @@
-<h1>My Mini Todo</h1>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Mini Todo</title>
+</head>
+<body>
+  <h1>My Mini Todo</h1>
+  <input type="text" placeholder="Add a todo" aria-label="New todo">
+  <button type="button">Add</button>
+  <ul></ul>
+  <script>
+    const input = document.querySelector('input');
+    const button = document.querySelector('button');
+    const list = document.querySelector('ul');
+
+    button.addEventListener('click', () => {
+      const todo = input.value.trim();
+
+      if (todo) {
+        const item = document.createElement('li');
+        item.textContent = todo;
+        list.appendChild(item);
+        input.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
