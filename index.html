@@ -12,15 +12,33 @@
   <ul></ul>
   <script>
     const input = document.querySelector('input');
-    const button = document.querySelector('button');
+    const addButton = document.querySelector('button');
     const list = document.querySelector('ul');
 
-    button.addEventListener('click', () => {
+    addButton.addEventListener('click', () => {
       const todo = input.value.trim();
 
       if (todo) {
         const item = document.createElement('li');
-        item.textContent = todo;
+        const todoText = document.createElement('span');
+        const deleteButton = document.createElement('button');
+
+        todoText.textContent = todo;
+        todoText.addEventListener('click', () => {
+          if (todoText.style.textDecoration === 'line-through') {
+            todoText.style.textDecoration = 'none';
+          } else {
+            todoText.style.textDecoration = 'line-through';
+          }
+        });
+
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => {
+          item.remove();
+        });
+
+        item.appendChild(todoText);
+        item.appendChild(deleteButton);
         list.appendChild(item);
         input.value = '';
       }
